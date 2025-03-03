@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Dynamic;
+using System.Runtime.CompilerServices;
 using Practice.models;
 
 internal class Program
@@ -6,29 +7,23 @@ internal class Program
     
     private static void Main(string[] args)
     {
-        //Console.WriteLine("Hello, World!");
-        //var strLength = GetLength(new StringWrapper("Hello")); // Works
-        //var arrLength = GetLength(new ArrayWrapper<int>(new int[] { 1, 2, 3 })); // Works
-
-        //Console.WriteLine(strLength); // Output: 5
-        //Console.WriteLine(arrLength); // Output: 3
-
-        //var queue = new MyQueue<int>();
-        //queue.Enqueue(10);
-        //queue.Enqueue(20);
-        //Console.WriteLine(queue.Deque()); // 10
-        //Console.WriteLine(queue.Size); // 1
-        List<IKeyValue<string , int>> pairs = new List<IKeyValue<string, int>>();
-        pairs.Add(new KeyValue<string, int>("One", 1));
-        pairs.Add(new KeyValue<string, int>("Two", 2));
-        pairs.Add(new KeyValue<string, int>("Three", 3));
-        pairs.Add(new KeyValue<string, int>("Four", 4));
-
-        foreach (var pair in pairs)
+        var person = new { Name = "Alice", Age = 30 };
+        var job = new { Role = "Developer", Salary = 50000 };
+        var merged = MergeObjects(person, job);
+        Console.WriteLine($"{merged.Name}, {merged.Age}, {merged.Role}, {merged.Salary}");
+    }
+    public static dynamic MergeObjects<T, U>(T obj1, U obj2)
+    {
+        var expando = new ExpandoObject() as IDictionary<string , object>;
+        foreach (var prop in obj1.GetType().GetProperties())
         {
-            Console.WriteLine($"{pair.Key} : {pair.Value}");
+            expando[prop.Name] = prop.GetValue(obj1);
+        }
+        foreach (var prop in obj2.GetType().GetProperties())
+        {
+            expando[prop.Name] = prop.GetValue(obj2);
         }
 
-
+        return expando;
     }
 }
